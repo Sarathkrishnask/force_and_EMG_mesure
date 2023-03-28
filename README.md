@@ -1,0 +1,1 @@
+This program is for measure the force and EMG activation at sampling rate of (1KHz). 
