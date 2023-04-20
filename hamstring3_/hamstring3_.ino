@@ -24,8 +24,8 @@ float weight=0;
 int ledPin = 10;
 volatile byte state = LOW;
 signed int emg1_ =A1;
-signed int emg2_ =A2;
-Encoder myEnc(5, 6);
+signed int emg2_ =A0;
+Encoder myEnc(22, 23);
 
 HX711 scale;
 
@@ -71,10 +71,10 @@ void loop() {
   if (newPosition != oldPosition) {
     oldPosition = newPosition;
   }
-  encoder_.value = newPosition;
+  encoder_.value = 50;
   load_cell();
   emg_chnl_1.val_ = analogRead(emg1_);
-  emg_chnl_2.val_ = analogRead(emg1_);
+  emg_chnl_2.val_ = analogRead(emg2_);
   timeVal.value = millis();
   // Send header
 
@@ -122,10 +122,10 @@ void load_cell(){
   weight = (reading / 44.473);
 //  Serial.println(weight / 1000);
 
-  force.val_ = (weight / 1000);
+  force.val_ = ((weight / 1000)* -9.81);
   }
   else{
-    force.val_=(weight / 1000);
+    force.val_=((weight / 1000)* -9.81);
   }
   
 }

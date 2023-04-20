@@ -73,7 +73,7 @@ class SerialPort(object):
                         _chksum = bytes([y1[23]%256])
                         if chksum==_chksum:  
                             self.force_=  list(struct.unpack("f", self.payload[0:4]))
-                            self.emg_chnl_1 =(struct.unpack("f", self.payload[4:8]))
+                            self.emg_chnl_1 =list(struct.unpack("f", self.payload[4:8]))
                             self.emg_chnl_2 = list(struct.unpack("f", self.payload[8:12]))
                             self.enc_ = list(struct.unpack("L", self.payload[12:16]))
                             self.Tim_val_ = list(struct.unpack("L", self.payload[16:20]))
@@ -90,6 +90,7 @@ class SerialPort(object):
                             # print(self.emg_chnl_1[0])  
                             # self.c=[self.force_,self.out_,self.out1_,self.enc_,self.Tim_val_]
                             self.c=[self.force_,self.emg_chnl_1,self.emg_chnl_2,self.enc_,self.Tim_val_]
+                            # print(self.c)
                             
                             # self.c_=[self.force_[0]]
                             self.q.append(self.c)
@@ -97,9 +98,8 @@ class SerialPort(object):
                             if len(self.q)>10000:
                                 self.q=self.q[1:10001]
                             if self.sw :
-                                # self.outputSignal = signal.filtfilt(self.b_notch, self.a_notch, self.emg_chnl_1)
-                                # print(self.outputSignal)
-                                self.writer.writerow(i[0] for i in self.c)
+                                
+                                self.writer.writerow([self.force_,self.emg_chnl_1,self.emg_chnl_2,self.angle,self.Tim_val_])
                                 # print([self.force_[0],self.emg_chnl_1[0],self.emg_chnl_2[0],self.enc_[0],self.Tim_val_[0]])
                             y1=y1[24:]
                             if len(y1)<24:
@@ -115,9 +115,10 @@ class SerialPort(object):
                     if len(y1)<4:
                         break
 
-    def kill_switch(self, sw,path3):
+    def kill_switch(self, sw,path3,angle):
+        self.angle = angle
         if sw:
-            header=['force','eng_chnl_1','emg_chnl_2','enocder','Time']
+            header=['force','eng_chnl_1','emg_chnl_2',"angle",'Time']
             
             self.f=open(path3, 'w',newline='')
             self.writer = csv.writer(self.f)
